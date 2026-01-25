@@ -2,7 +2,7 @@
 # Provisioning playbook called by Terraform
 # This playbook is executed immediately after VM creation
 - name: Initial VM provisioning
-  hosts: all
+  hosts: "{{ target_host }}"
   gather_facts: yes
   become: yes  # Run all tasks as root
   
@@ -26,4 +26,3 @@
       debug:
         msg: "{{ inventory_hostname }} provisioning completed successfully"
       tags: always
-      
