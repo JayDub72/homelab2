@@ -18,10 +18,10 @@ module "vms" {
   disk_discard       = lookup(each.value, "disk_discard", "on")
   network_bridge     = lookup(each.value, "network_bridge", var.default_network_bridge)
   network_vlan_id    = lookup(each.value, "network_vlan_id", null)
-  ip_address         = each.value.ip_address
+  ip_address         = lookup(each.value, "ip_address", "dhcp")
   ip_gateway         = lookup(each.value, "ip_gateway", var.default_gateway)
   agent_enabled      = lookup(each.value, "agent_enabled", true)
-
+  
   user_account_username = var.vm_user_account_username
   user_account_ssh_keys = var.vm_user_account_ssh_keys
 }

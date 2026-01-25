@@ -83,13 +83,15 @@ variable "network_vlan_id" {
 }
 
 variable "ip_address" {
-  description = "Static IP address in CIDR notation (e.g., 192.168.10.101/24)"
+  description = "Static IP address in CIDR notation (e.g., 192.168.10.101/24). Set to 'dhcp' for DHCP."
   type        = string
+  default     = "dhcp"
 }
 
 variable "ip_gateway" {
-  description = "Default gateway"
+  description = "Default gateway. Not used when ip_address is 'dhcp'."
   type        = string
+  default     = null
 }
 
 variable "agent_enabled" {

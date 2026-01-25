@@ -61,7 +61,7 @@ variable "vms" {
     disk_discard   = optional(string, "on")
     network_bridge = optional(string)
     network_vlan_id = optional(number)
-    ip_address     = string
+    ip_address     = optional(string, "dhcp")
     ip_gateway     = optional(string)
     agent_enabled  = optional(bool, true)
   }))

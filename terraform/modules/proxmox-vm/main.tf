@@ -46,11 +46,11 @@ resource "proxmox_virtual_environment_vm" "vm" {
   initialization {
     ip_config {
       ipv4 {
-        address = var.ip_address
-        gateway = var.ip_gateway
+        address = var.ip_address == "dhcp" ? "dhcp" : var.ip_address
+        gateway = var.ip_address == "dhcp" ? null : var.ip_gateway
       }
     }
-
+    
     user_account {
       username = var.user_account_username
       keys     = var.user_account_ssh_keys
