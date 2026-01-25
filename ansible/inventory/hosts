@@ -6,7 +6,11 @@ all:
         dev-vm:
           ansible_host: 192.168.1.100
         seedbox:
-          ansible_host: 192.168.1.101
+          ansible_host: 192.168.10.99
+        monitor:
+          ansible_host: 192.168.10.145
+        mealie:
+          ansible_host: 192.168.10.102
     lxcs:
       hosts:
     media:
