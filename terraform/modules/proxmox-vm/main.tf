@@ -45,7 +45,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
 
   initialization {
     dynamic "ip_config" {
-      for_each = var.ip_address != "dhcp" ? [1] : []
+      for_each = var.ip_address != "dhcp" && var.ip_address != null ? [1] : []
       content {
         ipv4 {
           address = var.ip_address
