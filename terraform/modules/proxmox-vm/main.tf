@@ -84,7 +84,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
           --limit ${var.name} \
           --extra-vars "ansible_host=${self.ipv4_addresses[1][0]}" \
           --extra-vars "ansible_user=${var.user_account_username}" \
-          --vault-password-file ${var.ansible_playbook_path}/.vault_pass
+          --vault-password-file "${path.module}/../../ansible/.vault_pass"
       fi
     EOT
   }
