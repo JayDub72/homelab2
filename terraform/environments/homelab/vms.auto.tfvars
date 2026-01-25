@@ -20,7 +20,7 @@ vms = {
     disk_datastore = "local-lvm"
     disk_size_gb   = 50
     network_vlan_id = 10
-    ip_address     = "dhpc"
+    ip_address     = "dhcp"
   }
 
   "monitor" = {
