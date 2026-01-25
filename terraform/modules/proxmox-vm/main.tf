@@ -80,11 +80,11 @@ resource "proxmox_virtual_environment_vm" "vm" {
       if [ "${var.ansible_playbook_enabled}" = "true" ]; then
         cd ${var.ansible_playbook_path}
         ansible-playbook ${var.ansible_playbook_file} \
-          --inventory ~/homelab2/ansible/inventory/hosts \
+          --inventory $HOME/homelab2/ansible/inventory/hosts \
           --limit ${var.name} \
           --extra-vars "ansible_host=${self.ipv4_addresses[1][0]}" \
           --extra-vars "ansible_user=${var.user_account_username}" \
-          --vault-password-file ~/.vault_pass
+          --vault-password-file ${var.ansible_playbook_path}/.vault_pass
       fi
     EOT
   }
