@@ -73,6 +73,9 @@ resource "proxmox_virtual_environment_vm" "vm" {
       # Wait for SSH to be available
       timeout 300 bash -c 'until ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 ${var.user_account_username}@${self.ipv4_addresses[1][0]} echo "SSH ready"; do sleep 5; done'
       
+      # Wait for cloud-init to finish
+      ssh -o StrictHostKeyChecking=no ${var.user_account_username}@${self.ipv4_addresses[1][0]} 'cloud-init status --wait'
+      
       # Run Ansible playbook if enabled
       if [ "${var.ansible_playbook_enabled}" = "true" ]; then
         cd ${var.ansible_playbook_path}
