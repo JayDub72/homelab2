@@ -9,7 +9,7 @@
 
 - name: Create CIFS credentials directory
   file:
-    path: /root/.smb_credentials
+    path: /etc/.smb_credentials
     state: directory
     mode: '0700'
     owner: root
@@ -18,7 +18,7 @@
 - name: Create CIFS credentials file
   template:
     src: smb_credentials.j2
-    dest: "/root/.smb_credentials/{{ item.name }}"
+    dest: "/etc/.smb_credentials/{{ item.name }}"
     mode: '0600'
     owner: root
     group: root

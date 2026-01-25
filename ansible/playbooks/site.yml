@@ -3,7 +3,8 @@
 - name: Configure all hosts
   hosts: all
   gather_facts: yes
-
+  become: yes  # Run all tasks as root
+  
   tasks:
     - name: Display host information
       debug:
@@ -28,7 +29,7 @@
     - name: Configure CIFS mounts
       include_role:
         name: cifs_mounts
-      when:
+      when: 
         - cifs_shares is defined
         - cifs_shares | length > 0
       tags: [cifs, storage]
@@ -41,4 +42,4 @@
         - managed_directories is defined
         - managed_directories | length > 0
       tags: [directories, storage]
-
+      

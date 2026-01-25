@@ -5,6 +5,8 @@ system_upgrade_packages: true
 allow_passwordless_sudo: true
 disable_root_ssh: true
 enable_ufw: false
+allow_password_auth: false  # Disable password auth, SSH key only
+restrict_ssh_users: true    # Only allow specific users
 
 common_packages:
   - vim
@@ -22,13 +24,13 @@ common_packages:
 
 # Example additional user configuration
 # Override in host_vars or group_vars
+# IMPORTANT: Use Ansible Vault to encrypt these values!
 # additional_user:
 #   username: "myuser"
 #   comment: "My User Account"
-#   password: "changeme"
+#   password: "changeme"      # ENCRYPT WITH VAULT!
 #   groups:
 #     - sudo
-#   ssh_key: "ssh-rsa AAAAB3..."
+#   ssh_key: "ssh-rsa AAAAB3..."  # ENCRYPT WITH VAULT!
 
-# root_password: "newrootpassword"  # Only if you want to change it
-#
+# root_password: "newrootpassword"  # ENCRYPT WITH VAULT!

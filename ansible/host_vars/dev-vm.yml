@@ -1,22 +1,20 @@
 ---
 # Configuration for dev-vm
 configure_common: true
-install_docker: true
+install_docker: false
 
 # User configuration
 additional_user:
-  username: "developer"
-  comment: "Development User"
-  password: "devpass123"  # Use Ansible Vault in production!
+  username: "jason"
+  comment: "Jason Worthen"
+  password: "{{ vault_additional_user_password }}"
   groups:
     - sudo
     - docker
-  ssh_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC... your-key-here"
+  ssh_key: "{{ vault_additional_user_ssh_key }}"
 
-# Docker users
-docker_users:
-  - ubuntu
-  - developer
+# Root password (from vault)
+root_password: "{{ vault_root_password }}"
 
 # Managed directories for development
 managed_directories:
@@ -34,3 +32,14 @@ managed_directories:
       - builds
       - logs
 
+# CIFS/SMB mounts for media
+cifs_shares:
+  - name: "media"
+    share_path: "//192.168.1.210/data"
+    mount_point: "/mnt/media"
+    username: "{{ vault_cifs_username }}"
+    password: "{{ vault_cifs_password }}"
+    mount_owner: "1000"
+    mount_group: "1000"
+    mount_mode: "0755"
+    state: "mounted"

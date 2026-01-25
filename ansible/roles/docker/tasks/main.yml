@@ -57,6 +57,16 @@
   loop: "{{ docker_users }}"
   when: docker_users is defined
 
+- name: Add additional_user to docker group if defined
+  user:
+    name: "{{ additional_user.username }}"
+    groups: docker
+    append: yes
+  when:
+    - additional_user is defined
+    - additional_user.username is defined
+  tags: [users]
+
 - name: Install Docker Compose (standalone)
   get_url:
     url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-linux-x86_64"
@@ -86,4 +96,3 @@
 - name: Display Docker version
   debug:
     msg: "{{ docker_version.stdout }}"
-

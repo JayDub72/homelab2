@@ -25,25 +25,37 @@
     state: present
   tags: [packages]
 
-- name: Create additional user account
+# User Management
+- name: Check if additional user exists
+  getent:
+    database: passwd
+    key: "{{ additional_user.username }}"
+  register: user_exists
+  failed_when: false
+  when: 
+    - additional_user is defined
+    - additional_user.username is defined
+  tags: [users]
+
+- name: Create or update additional user account
   user:
     name: "{{ additional_user.username }}"
     comment: "{{ additional_user.comment | default('') }}"
     shell: /bin/bash
     groups: "{{ additional_user.groups | default(['sudo']) }}"
-    append: yes
+    append: no  # Replace groups to ensure consistency
     create_home: yes
     state: present
-  when:
+  when: 
     - additional_user is defined
     - additional_user.username is defined
   tags: [users]
 
-- name: Set password for additional user
+- name: Force update password for additional user (even if exists)
   user:
     name: "{{ additional_user.username }}"
     password: "{{ additional_user.password | password_hash('sha512') }}"
-    update_password: on_create
+    update_password: always  # Always update password
   when:
     - additional_user is defined
     - additional_user.username is defined
@@ -51,11 +63,24 @@
   no_log: true
   tags: [users]
 
+- name: Ensure .ssh directory exists for additional user
+  file:
+    path: "/home/{{ additional_user.username }}/.ssh"
+    state: directory
+    mode: '0700'
+    owner: "{{ additional_user.username }}"
+    group: "{{ additional_user.username }}"
+  when:
+    - additional_user is defined
+    - additional_user.username is defined
+  tags: [users, ssh]
+
 - name: Add SSH key for additional user
   authorized_key:
     user: "{{ additional_user.username }}"
     key: "{{ additional_user.ssh_key }}"
     state: present
+    exclusive: no
   when:
     - additional_user is defined
     - additional_user.username is defined
@@ -64,7 +89,7 @@
 
 - name: Configure passwordless sudo for sudo group
   lineinfile:
-    path: /etc/sudoers.d/sudo-group
+    path: /etc/sudoers.d/sudo-group-nopasswd
     line: '%sudo ALL=(ALL:ALL) NOPASSWD: ALL'
     create: yes
     mode: '0440'
@@ -76,18 +101,53 @@
   user:
     name: root
     password: "{{ root_password | password_hash('sha512') }}"
+    update_password: always
   when: root_password is defined
   no_log: true
   tags: [users, security]
 
-- name: Disable root SSH login
+# SSH Security Configuration
+- name: Configure SSH - Disable root login
   lineinfile:
     path: /etc/ssh/sshd_config
-    regexp: '^PermitRootLogin'
+    regexp: '^#?PermitRootLogin'
     line: 'PermitRootLogin no'
     state: present
   notify: Restart SSH
   when: disable_root_ssh | default(true)
+  tags: [ssh, security]
+
+- name: Configure SSH - Enable pubkey authentication
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PubkeyAuthentication'
+    line: 'PubkeyAuthentication yes'
+    state: present
+  notify: Restart SSH
+  tags: [ssh, security]
+
+- name: Configure SSH - Disable password authentication
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PasswordAuthentication'
+    line: 'PasswordAuthentication {{ "yes" if allow_password_auth | default(false) else "no" }}'
+    state: present
+  notify: Restart SSH
+  tags: [ssh, security]
+
+- name: Ensure additional user can SSH
+  blockinfile:
+    path: /etc/ssh/sshd_config
+    marker: "# {mark} ANSIBLE MANAGED - Allow specific users"
+    block: |
+      AllowUsers {{ additional_user.username }} 
+    insertafter: EOF
+    create: no
+  when:
+    - additional_user is defined
+    - additional_user.username is defined
+    - restrict_ssh_users | default(true)
+  notify: Restart SSH
   tags: [ssh, security]
 
 - name: Enable UFW firewall
@@ -104,4 +164,3 @@
     proto: tcp
   when: enable_ufw | default(false)
   tags: [firewall]
-

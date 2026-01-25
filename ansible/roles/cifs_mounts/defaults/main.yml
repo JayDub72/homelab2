@@ -1,6 +1,6 @@
 ---
 # Default variables for CIFS mounts role
-cifs_default_mount_options: "credentials=/root/.smb_credentials/{{ item.name }},uid=1000,gid=1000,file_mode=0755,dir_mode=0755,vers=3.0"
+cifs_default_mount_options: "credentials=/etc/.smb_credentials/{{ item.name }},uid=1000,gid=1000,file_mode=0755,dir_mode=0755,vers=3.0,cache=loose,noserverino,nofail,_netdev,iocharset=utf8,soft,echo_interval=30,actimeo=30 0 0"
 
 # Example configuration (override in host_vars):
 # cifs_shares:
