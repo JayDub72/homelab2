@@ -44,10 +44,13 @@ resource "proxmox_virtual_environment_vm" "vm" {
   }
 
   initialization {
-    ip_config {
-      ipv4 {
-        address = var.ip_address == "dhcp" ? "dhcp" : var.ip_address
-        gateway = var.ip_address == "dhcp" ? null : var.ip_gateway
+    dynamic "ip_config" {
+      for_each = var.ip_address != "dhcp" ? [1] : []
+      content {
+        ipv4 {
+          address = var.ip_address
+          gateway = var.ip_gateway
+        }
       }
     }
     
