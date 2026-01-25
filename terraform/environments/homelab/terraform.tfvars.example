@@ -1,0 +1,18 @@
+# Proxmox API Configuration
+proxmox_api_url      = "https://192.168.1.198:8006/api2/json"
+proxmox_api_username = "root@pam"
+# DO NOT store password here - use environment variable instead:
+# export TF_VAR_proxmox_api_password="your_password"
+# Or use a .tfvars file that's in .gitignore
+proxmox_api_password = ""
+
+# Network Defaults
+default_network_bridge = "vmbr0"
+default_gateway        = "192.168.10.1"
+
+# VM User Configuration
+vm_user_account_username = "ubuntu"
+vm_user_account_ssh_keys = [
+  # Add your SSH public keys here
+  # "ssh-rsa AAAAB3NzaC1yc2EAAAA... user@host"
+]
