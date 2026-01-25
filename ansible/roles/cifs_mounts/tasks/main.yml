@@ -1,0 +1,57 @@
+---
+# CIFS/SMB mounts role
+- name: Install CIFS utilities
+  apt:
+    name:
+      - cifs-utils
+      - keyutils
+    state: present
+
+- name: Create CIFS credentials directory
+  file:
+    path: /root/.smb_credentials
+    state: directory
+    mode: '0700'
+    owner: root
+    group: root
+
+- name: Create CIFS credentials file
+  template:
+    src: smb_credentials.j2
+    dest: "/root/.smb_credentials/{{ item.name }}"
+    mode: '0600'
+    owner: root
+    group: root
+  loop: "{{ cifs_shares }}"
+  when:
+    - item.username is defined
+    - item.password is defined
+  no_log: true
+
+- name: Create mount point directories
+  file:
+    path: "{{ item.mount_point }}"
+    state: directory
+    mode: "{{ item.mount_mode | default('0755') }}"
+    owner: "{{ item.mount_owner | default('root') }}"
+    group: "{{ item.mount_group | default('root') }}"
+  loop: "{{ cifs_shares }}"
+
+- name: Add CIFS mounts to /etc/fstab
+  mount:
+    path: "{{ item.mount_point }}"
+    src: "{{ item.share_path }}"
+    fstype: cifs
+    opts: "{{ item.mount_options | default(cifs_default_mount_options) }}"
+    state: "{{ item.state | default('mounted') }}"
+    backup: yes
+  loop: "{{ cifs_shares }}"
+
+- name: Verify mounts are accessible
+  command: "mountpoint -q {{ item.mount_point }}"
+  loop: "{{ cifs_shares }}"
+  register: mount_check
+  changed_when: false
+  failed_when: false
+  when: item.state | default('mounted') == 'mounted'
+

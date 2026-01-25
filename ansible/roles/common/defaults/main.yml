@@ -1,0 +1,34 @@
+---
+# Default variables for common role
+system_timezone: "America/Chicago"
+system_upgrade_packages: true
+allow_passwordless_sudo: true
+disable_root_ssh: true
+enable_ufw: false
+
+common_packages:
+  - vim
+  - curl
+  - wget
+  - git
+  - htop
+  - net-tools
+  - unzip
+  - software-properties-common
+  - apt-transport-https
+  - ca-certificates
+  - gnupg
+  - lsb-release
+
+# Example additional user configuration
+# Override in host_vars or group_vars
+# additional_user:
+#   username: "myuser"
+#   comment: "My User Account"
+#   password: "changeme"
+#   groups:
+#     - sudo
+#   ssh_key: "ssh-rsa AAAAB3..."
+
+# root_password: "newrootpassword"  # Only if you want to change it
+#

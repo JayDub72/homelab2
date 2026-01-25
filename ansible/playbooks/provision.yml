@@ -1,0 +1,27 @@
+---
+# Provisioning playbook called by Terraform
+# This playbook is executed immediately after VM creation
+- name: Initial VM provisioning
+  hosts: all
+  gather_facts: yes
+
+  pre_tasks:
+    - name: Wait for system to become reachable
+      wait_for_connection:
+        timeout: 300
+        delay: 10
+      tags: always
+
+    - name: Gather facts
+      setup:
+      tags: always
+
+  roles:
+    - role: common
+      tags: [common]
+
+  tasks:
+    - name: Provisioning complete
+      debug:
+        msg: "{{ inventory_hostname }} provisioning completed successfully"
+      tags: always

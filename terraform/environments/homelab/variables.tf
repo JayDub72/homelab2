@@ -44,6 +44,24 @@ variable "vm_user_account_ssh_keys" {
   default     = []
 }
 
+variable "default_ansible_enabled" {
+  description = "Enable Ansible provisioning by default"
+  type        = bool
+  default     = true
+}
+
+variable "ansible_playbook_path" {
+  description = "Path to Ansible playbooks directory (relative to terraform dir)"
+  type        = string
+  default     = "../../../ansible/playbooks"
+}
+
+variable "default_ansible_playbook" {
+  description = "Default Ansible playbook to run"
+  type        = string
+  default     = "provision.yml"
+}
+
 variable "vms" {
   description = "Map of VMs to create"
   type = map(object({

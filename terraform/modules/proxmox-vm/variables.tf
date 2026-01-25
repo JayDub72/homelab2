@@ -111,3 +111,21 @@ variable "user_account_ssh_keys" {
   type        = list(string)
   default     = []
 }
+
+variable "ansible_playbook_enabled" {
+  description = "Enable Ansible provisioning after VM creation"
+  type        = bool
+  default     = false
+}
+
+variable "ansible_playbook_path" {
+  description = "Path to Ansible playbooks directory"
+  type        = string
+  default     = "../../../ansible/playbooks"
+}
+
+variable "ansible_playbook_file" {
+  description = "Ansible playbook file to run"
+  type        = string
+  default     = "provision.yml"
+}

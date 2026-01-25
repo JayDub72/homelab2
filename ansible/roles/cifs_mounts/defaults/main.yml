@@ -1,0 +1,17 @@
+---
+# Default variables for CIFS mounts role
+cifs_default_mount_options: "credentials=/root/.smb_credentials/{{ item.name }},uid=1000,gid=1000,file_mode=0755,dir_mode=0755,vers=3.0"
+
+# Example configuration (override in host_vars):
+# cifs_shares:
+#   - name: "media"
+#     share_path: "//nas.example.com/media"
+#     mount_point: "/mnt/media"
+#     username: "smbuser"
+#     password: "smbpassword"
+#     mount_owner: "ubuntu"
+#     mount_group: "ubuntu"
+#     mount_mode: "0755"
+#     mount_options: "credentials=/root/.smb_credentials/media,uid=1000,gid=1000,file_mode=0755,dir_mode=0755"
+#     state: "mounted"
+#

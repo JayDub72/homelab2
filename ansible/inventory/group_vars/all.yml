@@ -1,0 +1,12 @@
+---
+# Global variables for all hosts
+ansible_user: ubuntu
+ansible_python_interpreter: /usr/bin/python3
+ansible_ssh_private_key_file: ~/.ssh/id_rsa
+
+# Common settings
+system_timezone: "America/Chicago"
+allow_passwordless_sudo: true
+disable_root_ssh: true
+system_upgrade_packages: true
+

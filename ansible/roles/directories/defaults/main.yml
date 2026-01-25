@@ -1,0 +1,18 @@
+---
+# Default variables for directories role
+
+# Example configuration (override in host_vars):
+# managed_directories:
+#   - path: "/opt/applications"
+#     owner: "ubuntu"
+#     group: "ubuntu"
+#     mode: "0755"
+#   - path: "/data"
+#     owner: "ubuntu"
+#     group: "ubuntu"
+#     mode: "0775"
+#     subdirs:
+#       - downloads
+#       - media
+#       - backups
+#

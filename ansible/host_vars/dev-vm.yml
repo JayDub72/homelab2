@@ -1,0 +1,36 @@
+---
+# Configuration for dev-vm
+configure_common: true
+install_docker: true
+
+# User configuration
+additional_user:
+  username: "developer"
+  comment: "Development User"
+  password: "devpass123"  # Use Ansible Vault in production!
+  groups:
+    - sudo
+    - docker
+  ssh_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC... your-key-here"
+
+# Docker users
+docker_users:
+  - ubuntu
+  - developer
+
+# Managed directories for development
+managed_directories:
+  - path: "/opt/projects"
+    owner: "developer"
+    group: "developer"
+    mode: "0755"
+
+  - path: "/data/dev"
+    owner: "developer"
+    group: "developer"
+    mode: "0775"
+    subdirs:
+      - repos
+      - builds
+      - logs
+

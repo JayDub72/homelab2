@@ -1,0 +1,107 @@
+---
+# Common role - Ubuntu system configuration
+- name: Set timezone
+  community.general.timezone:
+    name: "{{ system_timezone }}"
+  tags: [timezone]
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  tags: [packages]
+
+- name: Upgrade all packages
+  apt:
+    upgrade: dist
+    autoremove: yes
+    autoclean: yes
+  when: system_upgrade_packages | default(true)
+  tags: [packages, upgrade]
+
+- name: Install common packages
+  apt:
+    name: "{{ common_packages }}"
+    state: present
+  tags: [packages]
+
+- name: Create additional user account
+  user:
+    name: "{{ additional_user.username }}"
+    comment: "{{ additional_user.comment | default('') }}"
+    shell: /bin/bash
+    groups: "{{ additional_user.groups | default(['sudo']) }}"
+    append: yes
+    create_home: yes
+    state: present
+  when:
+    - additional_user is defined
+    - additional_user.username is defined
+  tags: [users]
+
+- name: Set password for additional user
+  user:
+    name: "{{ additional_user.username }}"
+    password: "{{ additional_user.password | password_hash('sha512') }}"
+    update_password: on_create
+  when:
+    - additional_user is defined
+    - additional_user.username is defined
+    - additional_user.password is defined
+  no_log: true
+  tags: [users]
+
+- name: Add SSH key for additional user
+  authorized_key:
+    user: "{{ additional_user.username }}"
+    key: "{{ additional_user.ssh_key }}"
+    state: present
+  when:
+    - additional_user is defined
+    - additional_user.username is defined
+    - additional_user.ssh_key is defined
+  tags: [users, ssh]
+
+- name: Configure passwordless sudo for sudo group
+  lineinfile:
+    path: /etc/sudoers.d/sudo-group
+    line: '%sudo ALL=(ALL:ALL) NOPASSWD: ALL'
+    create: yes
+    mode: '0440'
+    validate: 'visudo -cf %s'
+  when: allow_passwordless_sudo | default(true)
+  tags: [sudo]
+
+- name: Set root password
+  user:
+    name: root
+    password: "{{ root_password | password_hash('sha512') }}"
+  when: root_password is defined
+  no_log: true
+  tags: [users, security]
+
+- name: Disable root SSH login
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PermitRootLogin'
+    line: 'PermitRootLogin no'
+    state: present
+  notify: Restart SSH
+  when: disable_root_ssh | default(true)
+  tags: [ssh, security]
+
+- name: Enable UFW firewall
+  community.general.ufw:
+    state: enabled
+    policy: deny
+  when: enable_ufw | default(false)
+  tags: [firewall]
+
+- name: Allow SSH through UFW
+  community.general.ufw:
+    rule: allow
+    port: '22'
+    proto: tcp
+  when: enable_ufw | default(false)
+  tags: [firewall]
+

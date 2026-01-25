@@ -1,0 +1,44 @@
+---
+# Main site playbook - orchestrates all roles based on host variables and tags
+- name: Configure all hosts
+  hosts: all
+  gather_facts: yes
+
+  tasks:
+    - name: Display host information
+      debug:
+        msg: "Configuring {{ inventory_hostname }} with roles: {{ ansible_role_names | default(['none']) }}"
+      tags: always
+
+    # Common configuration for all hosts
+    - name: Apply common configuration
+      include_role:
+        name: common
+      when: configure_common | default(true)
+      tags: [common, always]
+
+    # Docker installation
+    - name: Install Docker
+      include_role:
+        name: docker
+      when: install_docker | default(false)
+      tags: [docker]
+
+    # CIFS/SMB mounts
+    - name: Configure CIFS mounts
+      include_role:
+        name: cifs_mounts
+      when:
+        - cifs_shares is defined
+        - cifs_shares | length > 0
+      tags: [cifs, storage]
+
+    # Directory creation
+    - name: Create and configure directories
+      include_role:
+        name: directories
+      when:
+        - managed_directories is defined
+        - managed_directories | length > 0
+      tags: [directories, storage]
+

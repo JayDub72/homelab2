@@ -11,30 +11,32 @@
 
 vms = {
   "dev-vm" = {
-    node_name      = "donnager"
-    vm_id          = 2000
-    tags           = ["terraform", "ubuntu", "dev"]
-    template_id    = 9001
-    cpu_cores      = 2
-    memory_mb      = 4096
-    disk_datastore = "local-lvm"
-    disk_size_gb   = 50
+    node_name       = "donnager"
+    vm_id           = 2000
+    tags            = ["terraform", "ubuntu", "dev"]
+    template_id     = 9001
+    cpu_cores       = 2
+    memory_mb       = 4096
+    disk_datastore  = "local-lvm"
+    disk_size_gb    = 50
     network_vlan_id = 10
-    ip_address     = "dhcp"
+    ip_address      = "dhcp"
+    ansible_enabled = true
   }
 
   "monitor" = {
-    node_name      = "donnager"
-    vm_id          = 500
-    tags           = ["terraform", "ubuntu", "monitor"]
-    template_id    = 9001
-    cpu_cores      = 2
-    memory_mb      = 4096
-    disk_datastore = "local-lvm"
-    disk_size_gb   = 25
-    network_vlan_id = 10
-    ip_address     = "192.168.10.145/24"
-    ip_gateway     = "192.168.10.1"
+    node_name       = "donnager"
+    vm_id           = 500
+    tags            = ["terraform", "ubuntu", "monitor"]
+    template_id     = 9001
+    cpu_cores       = 2
+    memory_mb       = 4096
+    disk_datastore  = "local-lvm"
+    disk_size_gb    = 25
+    network_vlan_id  = 10
+    ip_address      = "192.168.10.145/24"
+    ip_gateway      = "192.168.10.1"
+    ansible_enabled = true
   }
 
   "seedbox" = {

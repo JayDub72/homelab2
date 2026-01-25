@@ -1,0 +1,18 @@
+---
+# Default variables for Docker role
+docker_compose_version: "v2.24.5"
+install_docker_compose_standalone: false
+
+# Users to add to docker group
+# docker_users:
+#   - ubuntu
+#   - myuser
+
+# Optional Docker daemon configuration
+# docker_daemon_config:
+#   log-driver: "json-file"
+#   log-opts:
+#     max-size: "10m"
+#     max-file: "3"
+#   storage-driver: "overlay2"
+#

@@ -1,0 +1,59 @@
+---
+# Configuration for seed-box VM
+configure_common: true
+install_docker: true
+
+# User configuration
+additional_user:
+  username: "mediauser"
+  comment: "Media Server User"
+  password: "changeme123"  # Use Ansible Vault in production!
+  groups:
+    - sudo
+    - docker
+  ssh_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC... your-key-here"
+
+# Docker users
+docker_users:
+  - ubuntu
+  - mediauser
+
+# CIFS/SMB mounts for media
+cifs_shares:
+  - name: "media"
+    share_path: "//nas.local/media"
+    mount_point: "/mnt/media"
+    username: "smbuser"
+    password: "smbpass"  # Use Ansible Vault in production!
+    mount_owner: "mediauser"
+    mount_group: "mediauser"
+    mount_mode: "0755"
+    state: "mounted"
+
+  - name: "downloads"
+    share_path: "//nas.local/downloads"
+    mount_point: "/mnt/downloads"
+    username: "smbuser"
+    password: "smbpass"  # Use Ansible Vault in production!
+    mount_owner: "mediauser"
+    mount_group: "mediauser"
+    mount_mode: "0755"
+    state: "mounted"
+
+# Managed directories
+managed_directories:
+  - path: "/opt/media-apps"
+    owner: "mediauser"
+    group: "mediauser"
+    mode: "0755"
+    subdirs:
+      - sonarr
+      - radarr
+      - transmission
+      - plex
+
+  - path: "/data"
+    owner: "mediauser"
+    group: "mediauser"
+    mode: "0775"
+

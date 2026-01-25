@@ -1,0 +1,30 @@
+---
+# Directory management role
+- name: Create managed directories
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: "{{ item.mode | default('0755') }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    recurse: "{{ item.recurse | default(false) }}"
+  loop: "{{ managed_directories }}"
+
+- name: Create nested directory structures
+  file:
+    path: "{{ item.path }}/{{ subdir }}"
+    state: directory
+    mode: "{{ item.mode | default('0755') }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+  loop: "{{ managed_directories }}"
+  loop_control:
+    loop_var: item
+  when: item.subdirs is defined
+  with_subelements:
+    - "{{ managed_directories }}"
+    - subdirs
+    - skip_missing: yes
+  vars:
+    subdir: "{{ item.1 }}"
+

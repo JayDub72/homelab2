@@ -24,4 +24,9 @@ module "vms" {
   
   user_account_username = var.vm_user_account_username
   user_account_ssh_keys = var.vm_user_account_ssh_keys
+  
+  # Ansible provisioning
+  ansible_playbook_enabled = lookup(each.value, "ansible_enabled", var.default_ansible_enabled)
+  ansible_playbook_path    = var.ansible_playbook_path
+  ansible_playbook_file    = lookup(each.value, "ansible_playbook", var.default_ansible_playbook)
 }
