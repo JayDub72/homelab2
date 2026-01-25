@@ -53,13 +53,13 @@ variable "default_ansible_enabled" {
 variable "ansible_playbook_path" {
   description = "Path to Ansible playbooks directory (relative to terraform dir)"
   type        = string
-  default     = "../../../ansible/playbooks"
+  default     = "../../../ansible"
 }
 
 variable "default_ansible_playbook" {
   description = "Default Ansible playbook to run"
   type        = string
-  default     = "provision.yml"
+  default     = "playbooks/provision.yml"
 }
 
 variable "vms" {
