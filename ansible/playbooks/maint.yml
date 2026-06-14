@@ -1,0 +1,117 @@
+---
+# Homelab Maintenance Playbook
+# Runs: apt update/upgrade on all hosts
+#       docker compose pull/restart on docker hosts
+#
+# Usage:
+#   All hosts:         ansible-playbook playbooks/maintenance.yml
+#   Specific group:    ansible-playbook playbooks/maintenance.yml --limit docker_hosts
+#   Specific host:     ansible-playbook playbooks/maintenance.yml --limit seedbox
+#   Packages only:     ansible-playbook playbooks/maintenance.yml --tags packages
+#   Docker only:       ansible-playbook playbooks/maintenance.yml --tags docker
+
+- name: System package updates
+  hosts: all
+  become: yes
+  serial: 1                    # One host at a time to avoid simultaneous reboots
+  gather_facts: yes
+  tags: [packages, always]
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 0    # Force refresh every time
+      tags: [packages]
+
+    - name: Upgrade all packages
+      apt:
+        upgrade: dist
+        autoremove: yes
+        autoclean: yes
+      register: apt_result
+      tags: [packages]
+
+    - name: Show packages upgraded
+      debug:
+        msg: "{{ apt_result.stdout_lines | select('match', '.*upgraded.*') | list }}"
+      when: apt_result.stdout_lines is defined
+      tags: [packages]
+
+    - name: Check if reboot is required
+      stat:
+        path: /var/run/reboot-required
+      register: reboot_required
+      tags: [packages]
+
+    - name: Notify if reboot required
+      debug:
+        msg: "!! REBOOT REQUIRED on {{ inventory_hostname }}"
+      when: reboot_required.stat.exists
+      tags: [packages]
+
+- name: Docker stack updates
+  hosts: docker_hosts
+  become: yes
+  gather_facts: no
+  tags: [docker]
+
+  vars:
+    # Default is /opt/docker - override per host in host_vars if ever needed
+    compose_dir: "{{ docker_compose_dir | default('/opt/docker') }}"
+
+  tasks:
+    - name: Check docker-compose.yml exists
+      stat:
+        path: "{{ compose_dir }}/docker-compose.yml"
+      register: compose_file
+      tags: [docker]
+
+    - name: Fail if compose file not found
+      fail:
+        msg: "No docker-compose.yml found at {{ compose_dir }}/docker-compose.yml"
+      when: not compose_file.stat.exists
+      tags: [docker]
+
+    - name: Pull latest Docker images
+      community.docker.docker_compose_v2:
+        project_src: "{{ compose_dir }}"
+        pull: always
+        state: present
+      register: pull_result
+      tags: [docker]
+
+    - name: Stop stack
+      community.docker.docker_compose_v2:
+        project_src: "{{ compose_dir }}"
+        state: stopped
+      tags: [docker]
+
+    - name: Prune old images
+      community.docker.docker_prune:
+        images: yes
+        images_filters:
+          dangling: false
+      tags: [docker]
+
+    - name: Start stack with updated images
+      community.docker.docker_compose_v2:
+        project_src: "{{ compose_dir }}"
+        state: present
+        remove_orphans: yes
+      tags: [docker]
+
+    - name: Verify containers are running
+      community.docker.docker_compose_v2:
+        project_src: "{{ compose_dir }}"
+        state: present
+      register: compose_state
+      tags: [docker]
+
+    - name: Show container status
+      debug:
+        msg: "{{ item.Name }}: {{ item.State }}"
+      loop: "{{ compose_state.containers }}"
+      when: compose_state.containers is defined
+      tags: [docker]
+

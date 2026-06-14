@@ -3,17 +3,37 @@ all:
   children:
     vms:
       hosts:
-        dev-vm:
-          ansible_host: 192.168.10.45
-        seedbox:
-          ansible_host: 192.168.10.99
-        monitor:
-          ansible_host: 192.168.10.145
-        mealie:
-          ansible_host: 192.168.10.102
     lxcs:
       hosts:
     media:
       hosts:
     monitoring:
       hosts:
+    proxmox:
+      hosts:
+        donnager:
+          ansible_host: 192.168.1.198
+        razorback:
+          ansible_host: 192.168.1.197
+        rocinate:
+          ansible_host: 192.168.1.199
+    lxc:
+      hosts:
+        dns1:
+          ansible_host: 192.168.1.100
+        dns2:
+          ansible_host: 192.168.1.101
+    docker_hosts:
+      hosts:
+        seedbox:
+          ansible_host: 192.168.10.99
+        plex:
+          ansible_host: 192.168.10.102
+        mealie:
+          ansible_host: 192.168.10.130
+        immich:
+          ansible_host: 192.168.10.135
+          ansible_python_interpreter: /usr/bin/python3.10
+        services:
+          ansible_host: 192.168.10.72
+

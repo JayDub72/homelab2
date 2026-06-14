@@ -1,12 +1,7 @@
 ---
 # Configuration for dev-vm
-
-# Load vault variables
-- include_vars: dev-vm-vault.yml
-
-# Common configuration
 configure_common: true
-install_docker: false
+install_docker: true
 
 # User configuration
 additional_user:
