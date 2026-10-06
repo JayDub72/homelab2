@@ -50,6 +50,14 @@
       when: reboot_required.stat.exists
       tags: [packages]
 
+    - name: Reboot if required
+      ansible.builtin.reboot:
+        msg: "Reboot initiated by Ansible after updates."
+        reboot_timeout: 600
+        post_reboot_delay: 30
+      when:
+        - reboot_required.stat.exists
+
 - name: Docker stack updates
   hosts: docker_hosts
   become: yes
